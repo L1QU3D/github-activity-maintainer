@@ -5,8 +5,8 @@ REPO_DIR="/home/l1qu3d/github-activity-maintainer"
 REPO="L1QU3D/github-activity-maintainer"
 cd "$REPO_DIR"
 
-git config user.name "L1QU3D"
-git config user.email "elduceentertainments@gmail.com"
+git config user.name "FREDRICK SARUNI"
+git config user.email "129012511+L1QU3D@users.noreply.github.com"
 
 COMMIT_COUNT=${1:-5}
 DO_PR=${2:-true}
@@ -75,4 +75,4 @@ if [ "$DO_PR" = "true" ]; then
   echo "Created, reviewed, and merged PR #$PR_NUM"
 fi
 
-echo "All activities (Commits, Issues, Pull Requests, Code Reviews) completed successfully!"
+echo "All activities completed successfully!"
