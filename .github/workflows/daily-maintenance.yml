@@ -8,10 +8,6 @@ on:
 permissions:
   contents: write
 
-concurrency:
-  group: maintenance-run
-  cancel-in-progress: false
-
 jobs:
   record-maintenance-run:
     runs-on: ubuntu-latest
@@ -19,36 +15,26 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
-      - name: Configure Git identity
+      - name: Append activity log and commit
         run: |
           git config user.name "L1QU3D"
           git config user.email "elduceentertainments@gmail.com"
 
-      - name: Append activity log
-        run: |
           mkdir -p maintenance
           timestamp_utc="$(date -u '+%Y-%m-%d %H:%M:%S UTC')"
           timestamp_local="$(TZ='Asia/Dubai' date '+%Y-%m-%d %H:%M:%S')"
 
           if [ ! -f maintenance/activity-log.md ]; then
-            printf "# Automated Activity Log\n\nThis file tracks daily maintenance runs.\n\n| Run | UTC | Local | Event | Repository | Commit | Actor |\n|---:|---|---|---|---|---|---|\n" > maintenance/activity-log.md
+            printf "# Automated Activity Log\n\nThis file tracks daily maintenance runs.\n\n| Run | UTC | Local | Event | Commit |\n|---:|---|---|---|---|\n" > maintenance/activity-log.md
           fi
 
-          printf '| %s | %s | %s | %s | `%s` | `%s` | `%s` |\n' \
+          printf '| %s | %s | %s | %s | `%s` |\n' \
             "${{ github.run_number }} (id: ${{ github.run_id }})" "$timestamp_utc" "$timestamp_local" \
-            "${{ github.event_name }}" "${{ github.repository }}" "${{ github.sha }}" "${{ github.actor }}" \
+            "${{ github.event_name }}" "${{ github.sha }}" \
             >> maintenance/activity-log.md
 
-      - name: Commit and push changes
-        run: |
-          if git diff --quiet -- maintenance/activity-log.md; then
-            echo "No changes to commit."
-            exit 0
-          fi
-
           git add maintenance/activity-log.md
-          git commit -m "chore(activity): record maintenance run [skip ci]"
+          git commit -m "chore(activity): update daily activity log [skip ci]"
           git push origin main
